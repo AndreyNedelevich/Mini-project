@@ -1,19 +1,24 @@
 
-import {getUsersData,displayError} from '/API.js'
+import {getUsersData} from '/API.js'
+//  Функция getUsersData вызываеться в loginUser.
 
-
-
+const form = document.forms.form;
 const informUser = document.querySelector('.app_wrapper');
 const labelWelcome = document.querySelector('.welcome');
 const containerApp = document.querySelector('.app');
-const form = document.forms.form;
+const messageWindow=document.querySelector('.window');
+const btnCloseMessageWindow=document.querySelector('#closeWindow');
+
+
 
 let currentAccount;
 // В переменной храним текущего пользователя.
 
 
 
-//********Блок с функция для добавление дополнительных параметров в каждого USER (login,Password)*********************
+//********Блок с функция для получение данных с API и добавление дополнительных параметров в каждого USER (login,Password)*********************
+
+
 const createNicknames = function (user) {
     user.nickName = user.email
 };
@@ -27,8 +32,10 @@ const createPassword = function (user) {
     user.password
         = firstLatter + lastNumber
 }
-const extraOption=function () {
-    users.forEach(user => {
+
+//  Функция вызываеться в loginUser для занесение дополнительных данных в USERS.
+const extraOption=function (arg) {
+    arg.forEach(user => {
         createNicknames(user)
         createPassword(user)
     })
@@ -36,15 +43,27 @@ const extraOption=function () {
 
 
 //**********************************************************************************************************
-const users = await getUsersData(`https://jsonplaceholder.typicode.com/users`)
-console.log(users);
-// Можно смоделировать ошибку не загрузки  Ошибки обработал и
-// перевыбрасил  в API.Можно отключить интернет или (const post = await getUsersData(const users = await getUsersData(`https://jsonplaceholder.typicode.com/1users`))
+// let users = await getUsersData(`https://jsonplaceholder.typicode.com/users`)
+// console.log(users)
+// extraOption(users);
+
 
 
 //***************************                ФУНКЦИИ       ************************************
-extraOption()//запуск функции для добавления доп параметров в каждого USER после получение данных.
+// Функция для закрытия окна ошибки incorrect Login or Password.
+const closeMessageIncorrectPasswordOrLogin = function () {
+    messageWindow.classList.add('hidden');
+};
 
+
+
+
+
+
+
+
+
+//  Функция вызываеться в loginUser для отображаеться приветствия.
 const displayUser = function (account){
     informUser.innerHTML = '';
     const userInfo=`<div class="name">${account.name}</div>
@@ -57,15 +76,20 @@ const displayUser = function (account){
 
 
 
-// Проверка из locale Storage что бы оставться залогиненным.
+// Проверка из locale Storage что бы оставатся залогиненным.
 if (!!localStorage.getItem('currentAccount')) {
-    const current = JSON.parse(localStorage.getItem('currentAccount'))
+    let current = JSON.parse(localStorage.getItem('currentAccount'))
     displayUser(current);
     containerApp.style.opacity = 100;
 }
 
-// Функция входа в Акаунт.
-const loadUserData = function () {
+
+// Функция входа в Акаунт. (Асинхронная)
+const loginUser =async function () {
+    let users = await getUsersData(`https://jsonplaceholder.typicode.com/users`)
+    // console.log(users)
+    extraOption(users);
+
     const passwordValue=form.password.value.trim();
     const loginValue=form.email.value.trim();
     currentAccount = users.find(
@@ -75,19 +99,20 @@ const loadUserData = function () {
     if (currentAccount?.password === passwordValue) {
         localStorage.setItem('login', 'true')
         localStorage.setItem('currentAccount', JSON.stringify(currentAccount));
-        let isLogin=true;
+
         form.email.classList.remove('valid');
         form.password.classList.remove('valid')
         containerApp.style.opacity = 100;
         displayUser(currentAccount)
     }else {
-        alert('Incorrect Login or Password')
+        messageWindow.classList.remove('hidden');
         form.email.classList.add('valid');
         form.password.classList.add('valid')
     }
     form.email.value = '';
     form.password.value = '';
 }
+
 
 // Функция выхода из Акаунта.
 const logOutUser=function (){
@@ -103,13 +128,21 @@ const logOutUser=function (){
 form.signIn.addEventListener('click',function (e){
     e.preventDefault();
     if(!JSON.parse(localStorage.getItem('login'))){
-        loadUserData();
+        loginUser();
     }
 });
+
 
 // Выход из профиля
 form.logout.addEventListener('click',logOutUser);
 
+
+btnCloseMessageWindow.addEventListener('click', closeMessageIncorrectPasswordOrLogin);
+
+document.body.addEventListener('click', closeMessageIncorrectPasswordOrLogin);
+
+
+//  ЛОГИНЫ И ПАРОЛИ USERS
 
 //0
 // Sincere@april.biz

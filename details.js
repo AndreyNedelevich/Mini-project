@@ -159,7 +159,6 @@ select.addEventListener('change',function (e){
 // Слущатель поиска поста по title.
 
 search.addEventListener('input',function (e){
-console.log(search.value);
 const updatePosts=posts.filter(post=>post.title.toLowerCase().includes(search.value.toLowerCase()))
     showPosts(updatePosts)
 })
