@@ -7,20 +7,41 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>User Details</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" defer src="userDetails.js"></script>
+    <script defer src="https://kit.fontawesome.com/e3c0d2346a.js" crossorigin="anonymous"></script>
+    <script type="module" defer src="details.js"></script>
 </head>
 <body>
 <header class='header'>
-    <h1>Меню пользователя</h1>
-    <h2 class="header_title"></h2>
+    <a href="index.html"  class="icon_home"><i class="fa-solid fa-house fa-3x"></i></a>
+    <a href="index.html" class="icon_arrow"><i class="fa-solid fa-left-long fa-3x"></i></a>
+
+
+    <h1 class="main_title">User's menu</h1>
+    <h2 class="post_title"></h2>
 </header>
+<div id="error" ></div>
 
 <main class="app">
     <div class="wrapper_inform"></div>
-    <div id="posts" class="wrapper_posts hidden">
-    </div>
-</main>
+    <div class="container_posts hidden">
+        <div class="wrapper_search">
+            <label>
+                Search
+                <input class="search" type="text"/>
+            </label>
+            <label>
+                Sorting
+                <select class="select">
+                    <option value="defolt" selected>Choose an option</option>
+                    <option value="new">Сначала новые</option>
+                    <option value="old">Сначала старые</option>
+                </select>
+            </label>
+        </div>
 
+        <div id="posts" class="wrapper_posts"></div>
+    </div>
+ </main>
 
 </body>
 </html>

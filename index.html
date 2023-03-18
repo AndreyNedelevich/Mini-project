@@ -1,10 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Main</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" defer src="main.js"></script>
 </head>
 <body>
-$END$
+<header class='header'>
+    <h1 class="main_title">Okten Community </h1>
+    <div class="header_form">
+        <form action="#" class="contacts_form" name="form">
+            <div class="wrapper_input">
+                <label>
+                    login
+                    <input class="header_input"  name="email" type="email"/>
+                </label>
+                <label>password
+                    <input class="header_input"  name="password" type="password"/>
+                </label>
+            </div>
+            <div class="wrapper_button">
+                <button type="submit" class="button" name="signIn">Sign In</button>
+                <button type="submit" class="button" name="logout">log out</button>
+            </div>
+        </form>
+    </div>
+</header>
+<div id="error"></div>
+
+<main class="app">
+    <p class="welcome"></p>
+    <div class="app_wrapper">
+
+    </div>
+
+
+</main>
 </body>
 </html>

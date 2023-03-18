@@ -1,39 +1,54 @@
-// В index.html
-// 1 отримати масив об'єктів з endpoint`а https://jsonplaceholder.typicode.com/users
-// 2 Вивести id,name всіх user в index.html. Окремий блок для кожного user.
-// 3 Додати кожному блоку кнопку/посилання , при кліку на яку відбувається перехід  на сторінку details.html, котра має детальну інфорацію про об'єкт на який клікнули
-// На странице details.html:
-// 4 Вивести всю, без виключення, інформацію про об'єкт user на який клікнули
-// 5 Додати кнопку "post of current user", при кліку на яку, з'являються title всіх постів поточного юзера
-// (для получения постов используйте эндпоинт https://jsonplaceholder.typicode.com/users/USER_ID/posts)
-//     6 Каждому посту додати кнопку/посилання, при кліку на яку відбувається перехід на сторінку post-details.html, котра має детальну інфу про поточний пост.
-//     На странице post-details.html:
-// 7 Вивести всю, без виключення, інформацію про об'єкт post на який клікнули .
+
+import {getUsersData,displayError} from '/API.js'
 
 
-// Стилизація проєкта -
-// index.html - всі блоки з user - по 2 в рядок. кнопки/аосилвння розташувати під інформацією про user.
-//     details.html - блок з інфою про user зверху сторінки. Кнопка нижчє, на 90% ширини сторінки, по центру.
-//     блоки з короткою іфною про post - в ряд по 5 .
-//     post-details.html - блок з інфою про пост зверху. Коментарі - по 4 в ряд.
-//     Всі елементи котрі характеризують users, posts, comments візуалізувати, так, щоб було видно що це блоки (дати фон. марджини і тд)
-
-
-
-import {getUsersData} from '/fetch.js'
-
-const users = await getUsersData('users')
 
 const informUser = document.querySelector('.app_wrapper');
 const labelWelcome = document.querySelector('.welcome');
 const containerApp = document.querySelector('.app');
 const form = document.forms.form;
 
+let currentAccount;
+// В переменной храним текущего пользователя.
+
+
+
+//********Блок с функция для добавление дополнительных параметров в каждого USER (login,Password)*********************
+const createNicknames = function (user) {
+    user.nickName = user.email
+};
+
+const createPassword = function (user) {
+    const lastNumber = user.phone.slice(-3)
+    const firstLatter = user.name.toLowerCase()
+        .split(' ')
+        .map(word => word[0])
+        .join('');
+    user.password
+        = firstLatter + lastNumber
+}
+const extraOption=function () {
+    users.forEach(user => {
+        createNicknames(user)
+        createPassword(user)
+    })
+}
+
+
+//**********************************************************************************************************
+const users = await getUsersData(`https://jsonplaceholder.typicode.com/users`)
+console.log(users);
+// Можно смоделировать ошибку не загрузки  Ошибки обработал и
+// перевыбрасил  в API.Можно отключить интернет или (const post = await getUsersData(const users = await getUsersData(`https://jsonplaceholder.typicode.com/1users`))
+
+
+//***************************                ФУНКЦИИ       ************************************
+extraOption()//запуск функции для добавления доп параметров в каждого USER после получение данных.
 
 const displayUser = function (account){
     informUser.innerHTML = '';
     const userInfo=`<div class="name">${account.name}</div>
-        <button class="button"><a class="a" href="userDetails.html?id=${account.id}"> Информация о пользователе</a></button> `
+        <button class="button"><a class="a" href="details.html?id=${account.id}"> User Information</a></button> `
     informUser.insertAdjacentHTML('afterbegin', userInfo)
     labelWelcome.textContent = `Рады что вы снова с нами, ${
         account.name.split(' ')[0]
@@ -42,58 +57,99 @@ const displayUser = function (account){
 
 
 
-
- let currentAccount;
-
+// Проверка из locale Storage что бы оставться залогиненным.
 if (!!localStorage.getItem('currentAccount')) {
     const current = JSON.parse(localStorage.getItem('currentAccount'))
-    console.log(current);
     displayUser(current);
     containerApp.style.opacity = 100;
 }
 
-
-const loadUserData = function (e) {
-    e.preventDefault();
+// Функция входа в Акаунт.
+const loadUserData = function () {
+    const passwordValue=form.password.value.trim();
+    const loginValue=form.email.value.trim();
     currentAccount = users.find(
         account => account.nickName
-            === this.email.value
+            === loginValue
     );
-    if (currentAccount?.password === this.password.value) {
-        // localStorage.setItem('login', 'true')
+    if (currentAccount?.password === passwordValue) {
+        localStorage.setItem('login', 'true')
         localStorage.setItem('currentAccount', JSON.stringify(currentAccount));
+        let isLogin=true;
+        form.email.classList.remove('valid');
+        form.password.classList.remove('valid')
         containerApp.style.opacity = 100;
-        this.email.value = '';
-        this.password.value = '';
         displayUser(currentAccount)
-        console.log(currentAccount);
+    }else {
+        alert('Incorrect Login or Password')
+        form.email.classList.add('valid');
+        form.password.classList.add('valid')
     }
+    form.email.value = '';
+    form.password.value = '';
 }
 
-// console.log(location.href);
-// let url = new URL(location.href)
-// console.log(url.searchParams)
-// let id = url.searchParams.get('id');
-// console.log(id); //2
+// Функция выхода из Акаунта.
+const logOutUser=function (){
+    localStorage.removeItem('currentAccount');
+    localStorage.setItem('login', 'false')
+    currentAccount=''
+    containerApp.style.opacity = 0;
+}
 
-export const cart = [];
-console.log(cart);
+//*****************                   СЛУШАТЕЛИ СОБЫТИЙ     **********************************
+
+// Вход в профиль.
+form.signIn.addEventListener('click',function (e){
+    e.preventDefault();
+    if(!JSON.parse(localStorage.getItem('login'))){
+        loadUserData();
+    }
+});
+
+// Выход из профиля
+form.logout.addEventListener('click',logOutUser);
 
 
-form.addEventListener('submit', loadUserData);
-
-
-
-
-
-
-
-
-
+//0
 // Sincere@april.biz
 // lg442
 
+//1
+//Shanna@melissa.tv
+//eh125
 
+//2
+// Nathan@yesenia.net
+// cb447
+
+//3
+//Julianne.OConner@kory.org
+//pl156
+
+//4
+//Lucio_Hettinger@annie.ca
+//cd289
+
+//5
+//Karley_Dach@jasper.info
+//mds430
+
+//6
+//Telly.Hoeger@billy.biz
+//kw132
+
+//7
+//Sherwood@rosamond.me
+//nrv140
+
+//8
+//Chaim_McDermott@dana.io
+//gr206
+
+//9
+//Rey.Padberg@karina.biz
+//cd804
 
 
 
