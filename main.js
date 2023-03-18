@@ -141,7 +141,6 @@ btnCloseMessageWindow.addEventListener('click', closeMessageIncorrectPasswordOrL
 
 document.body.addEventListener('click', closeMessageIncorrectPasswordOrLogin);
 
-
 //  ЛОГИНЫ И ПАРОЛИ USERS
 
 //0
