@@ -3,7 +3,6 @@ let blockLoader=document.querySelector('.block_loader')
 
  let isloader=false;
 
-
 export const displayError = function (message) {
     let messageError = `<div class="infoError"> 
 ${message} </div>`
